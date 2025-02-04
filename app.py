@@ -71,12 +71,20 @@ def eliminar_inventario_detalle(detalle_id):
 # Interfaz Streamlit
 st.title("Gestión de Inventarios")
 
-menu = st.sidebar.selectbox("Seleccionar módulo", ["Depósitos", "Productos", "Inventarios", "Detalle de Inventarios"])
+menu = st.sidebar.radio("Seleccionar módulo", ["Depósitos", "Productos", "Inventarios", "Detalle de Inventarios"])
 
 if menu == "Inventarios":
     st.subheader("Gestión de Inventarios")
     inventarios = listar_inventarios()
     st.table(inventarios)
+
+    with st.form("Crear Inventario"):
+        descripcion = st.text_input("CREAR INVENTARIO: Descripción del Inventario")
+        submit = st.form_submit_button("Crear")
+        
+        if submit:
+            resultado = crear_inventario(descripcion)
+            st.write(resultado)
     
     with st.form("Modificar Inventario"):
         inventario_id = st.number_input("ID del Inventario a modificar", min_value=1, format="%d")
@@ -94,6 +102,7 @@ if menu == "Inventarios":
         if submit:
             resultado = eliminar_inventario(inventario_id)
             st.write(resultado)
+
     
 elif menu == "Detalle de Inventarios":
     st.subheader("Gestión de Detalle de Inventarios")
@@ -150,6 +159,25 @@ elif menu == "Depósitos":
         if submit:
             resultado = crear_deposito(nombre, padre_id, almacena)
             st.write(resultado)
+    
+    with st.form("Modificar Depósito"):
+        deposito_id = st.number_input("ID del Depósito a modificar", min_value=1, format="%d")
+        nombre = st.text_input("Nuevo nombre del depósito")
+        padre_id = st.number_input("ID del nuevo depósito padre", min_value=0, format="%d")
+        almacena = st.checkbox("¿Almacena productos?", value=False)
+        submit = st.form_submit_button("Modificar")
+        
+        if submit:
+            resultado = modificar_deposito(deposito_id, nombre, padre_id, almacena)
+            st.write(resultado)
+    
+    with st.form("Eliminar Depósito"):
+        deposito_id = st.number_input("ID del Depósito a eliminar", min_value=1, format="%d")
+        submit = st.form_submit_button("Eliminar")
+        
+        if submit:
+            resultado = eliminar_deposito(deposito_id)
+            st.write(resultado)
 
 elif menu == "Productos":
     st.subheader("Gestión de Productos")
@@ -166,4 +194,24 @@ elif menu == "Productos":
         
         if submit:
             resultado = crear_producto(codigo_alfa, descripcion, precio, proveedor_codigo, proveedor_nombre)
+            st.write(resultado)
+    
+    with st.form("Modificar Producto"):
+        codigo_alfa = st.text_input("Código Alfa del Producto a modificar")
+        descripcion = st.text_input("Nueva Descripción")
+        precio = st.number_input("Nuevo Precio", min_value=0.0, format="%.2f")
+        proveedor_codigo = st.text_input("Nuevo Código del Proveedor")
+        proveedor_nombre = st.text_input("Nuevo Nombre del Proveedor")
+        submit = st.form_submit_button("Modificar")
+        
+        if submit:
+            resultado = modificar_producto(codigo_alfa, descripcion, precio, proveedor_codigo, proveedor_nombre)
+            st.write(resultado)
+    
+    with st.form("Eliminar Producto"):
+        codigo_alfa = st.text_input("Código Alfa del Producto a eliminar")
+        submit = st.form_submit_button("Eliminar")
+        
+        if submit:
+            resultado = eliminar_producto(codigo_alfa)
             st.write(resultado)
