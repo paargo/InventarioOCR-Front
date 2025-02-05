@@ -2,7 +2,8 @@ import streamlit as st
 import requests
 
 # Configuración de la API
-API_URL = "https://invetarioocr.onrender.com/"
+#API_URL = "https://invetarioocr.onrender.com/"
+API_URL = "http://127.0.0.1:8000"
 
 def listar_depositos():
     response = requests.get(f"{API_URL}/depositos/")
@@ -26,6 +27,11 @@ def listar_productos():
 
 def crear_producto(codigo_alfa, descripcion, precio, proveedor_codigo, proveedor_nombre):
     response = requests.post(f"{API_URL}/productos/", json={"codigo_alfa": codigo_alfa, "descripcion": descripcion, "precio": precio, "proveedor_codigo": proveedor_codigo, "proveedor_nombre": proveedor_nombre})
+    return response.json()
+    
+def cargar_productos_archivo(archivo):
+    files = {'archivo': archivo}
+    response = requests.post(f"{API_URL}/productos/archivo", files=files)
     return response.json()
 
 def modificar_producto(codigo_alfa, descripcion, precio, proveedor_codigo, proveedor_nombre):
