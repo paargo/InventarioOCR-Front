@@ -28,9 +28,9 @@ def listar_productos():
 def crear_producto(codigo_alfa, descripcion, precio, proveedor_codigo, proveedor_nombre):
     response = requests.post(f"{API_URL}/productos/", json={"codigo_alfa": codigo_alfa, "descripcion": descripcion, "precio": precio, "proveedor_codigo": proveedor_codigo, "proveedor_nombre": proveedor_nombre})
     return response.json()
-    
+
 def cargar_productos_archivo(archivo):
-    files = {'archivo': archivo}
+    files = {'file': archivo}
     response = requests.post(f"{API_URL}/productos/archivo", files=files)
     return response.json()
 
@@ -188,8 +188,18 @@ elif menu == "Depósitos":
 elif menu == "Productos":
     st.subheader("Gestión de Productos")
     productos = listar_productos()
-    st.table(productos)
-    
+    st.table(productos[:10])
+    with st.form("Buscar Producto por Código Alfa"):
+        codigo_alfa = st.text_input("Código Alfa del Producto a buscar")
+        submit = st.form_submit_button("Buscar")
+        
+        if submit:
+            producto = requests.get(f"{API_URL}/productos/{codigo_alfa}").json()
+            if producto:
+                st.write(producto)
+            else:
+                st.write("Producto no encontrado")
+
     with st.form("Crear Producto"):
         codigo_alfa = st.text_input("Código Alfa")
         descripcion = st.text_input("Descripción")
@@ -202,6 +212,14 @@ elif menu == "Productos":
             resultado = crear_producto(codigo_alfa, descripcion, precio, proveedor_codigo, proveedor_nombre)
             st.write(resultado)
     
+    with st.form("Cargar Productos desde Archivo"):
+        archivo = st.file_uploader("Seleccionar archivo", type=["csv", "xlsx"])
+        submit = st.form_submit_button("Cargar")
+        
+        if submit and archivo is not None:
+            resultado = cargar_productos_archivo(archivo)
+            st.write(resultado)
+
     with st.form("Modificar Producto"):
         codigo_alfa = st.text_input("Código Alfa del Producto a modificar")
         descripcion = st.text_input("Nueva Descripción")
